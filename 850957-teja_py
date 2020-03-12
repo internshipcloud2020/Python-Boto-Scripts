@@ -1,0 +1,54 @@
+#using boto3 creating a s3bucket
+#create a bucket
+import boto3
+import os
+import sys
+import pandas as pd
+import matplotlib.pyplot as plt
+
+client=boto3.client('s3')
+request=client.create_bucket(
+    ACL='private',
+    Bucket='teja2020{}'.format(Current_time),
+    CreateBucketConfiguration={
+        'LocationConstraint':'us-east-1'
+    }
+)
+#upload a file to a bucket
+with open("dog.jpg",'rb') as f:
+    data=f.read()
+request=client.putobject(
+    ACL='private',
+    Body=data,
+    Bucket='teja2020{}'.format(Current_time),
+    key='dog.jpg',
+ )
+with open("elephant.jpg",'rb') as f:
+    datas=f.read()
+request=client.putobject(
+    ACL='private',
+    Body=datas,
+    Bucket='teja2020{}'.format(Current_time),
+    key='elephant.jpg',
+ )
+
+#delete a file
+request=client.delete_object(
+    Bucket='teja2020{}'.format(Current_time),
+    key='elephant.jpg',
+)
+
+#get the objects in s3 buckets
+request=client.list_objects(
+    Bucket='teja2020{}'.format(Current_time)
+)
+for x in request.get("Contents",None):
+    print(x.get("key",None))
+
+#list of buckets
+request=client.list_bucket()
+for x in request.get("Buckets",None):
+    print(x.get("Name",None))
+
+
+

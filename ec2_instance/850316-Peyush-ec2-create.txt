@@ -14,4 +14,3 @@ inst1=ec2.create_instance(ImageId='ami-0f3ge4jqz4344',MinCount=1,MaxCount=3,Inst
 
 # displays the InstanceId of ec2 created
 print(inst1[0].id)
-print(inst1[0].id)

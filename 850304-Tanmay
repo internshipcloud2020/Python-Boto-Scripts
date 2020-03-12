@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+ 
+import boto3
+ 
+ec2 = boto3.resource('ec2')
+ec2client = boto3.client('ec2')
+
+ 
+#-----Define Lambda function-----#
+def lambda_handler(event, context):
+ 
+#-----Check& filter Instances which  Kloud_managed equal true-----#
+    instances = ec2client.describe_instances(Filters=[{'Name': 'tag:kloud_managed', 'Values': ['True']}])
+ 
+#-----Define dictionary to store Tag Key & value------#
+    dict={}
+ 
+#-----Store Key & Value of Instance Tag:“Name” ------#
+    for reservation in instances['Reservations']:
+        for instance in reservation['Instances']:
+           for tag in instance['Tags']: 
+                if tag['Key'] == 'Name':
+                    #print ( instance['InstanceId'],tag['Value'])
+                    #ids.append(( instance['InstanceId'],tag['Value']))
+                    dict[instance['InstanceId']]= tag['Value']
+                    
+#-----Store Key & Value with attached instance ID of all volumes ------#     
+    volumes = ec2.volumes.all() 
+    for volume in volumes:
+ 
+#-----compare dictionary value Key:InstanceID and volume attached Key:InstanceID ------#     
+        for a in volume.attachments:
+            for key, value in dict.items():
+ 
+#-----compare dictionary value Key:InstanceID and volume attached Key:InstanceID ------# 
+#-----If the InstanceID matched create new Tag:’Kloud_Name’ with key of value: servername ------#     
+    
+            if a['InstanceId'] == key:
+                     volume.create_tags(Tags=[{'Key': 'Kloud_Name', 'Value': value}])
